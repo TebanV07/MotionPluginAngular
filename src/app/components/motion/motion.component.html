@@ -1,0 +1,29 @@
+<div class="sensor-container">
+  <div class="sensor-section">
+    <h2>Acelerómetro (m/s²)</h2>
+    <div class="sensor-data">
+      <p>X: {{motionData.acceleration?.x?.toFixed(2) ?? 'No data'}}</p>
+      <p>Y: {{motionData.acceleration?.y?.toFixed(2) ?? 'No data'}}</p>
+      <p>Z: {{motionData.acceleration?.z?.toFixed(2) ?? 'No data'}}</p>
+    </div>
+  </div>
+
+  <div class="sensor-section">
+    <h2>Giroscopio (°)</h2>
+    <div class="sensor-data">
+      <p>Alpha: {{motionData.rotation?.alpha?.toFixed(2) ?? 'No data'}}</p>
+      <p>Beta: {{motionData.rotation?.beta?.toFixed(2) ?? 'No data'}}</p>
+      <p>Gamma: {{motionData.rotation?.gamma?.toFixed(2) ?? 'No data'}}</p>
+    </div>
+  </div>
+
+  <div class="sensor-section">
+    <h2>Orientación (°)</h2>
+    <div class="sensor-data">
+      <p>Pitch: {{motionData.orientation?.pitch ?? 'No data'}}</p>
+      <p>Roll: {{motionData.orientation?.roll ?? 'No data'}}</p>
+      <p>Yaw: {{motionData.orientation?.yaw ?? 'No data'}}</p>
+    </div>
+  </div>
+</div>
+

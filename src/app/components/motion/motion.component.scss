@@ -1,0 +1,29 @@
+.sensor-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+
+  .sensor-section {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .sensor-data {
+      display: grid;
+      gap: 10px;
+
+      p {
+        margin: 0;
+        font-size: 16px;
+        color: #666;
+      }
+    }
+  }
+}
