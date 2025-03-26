@@ -1,29 +1,164 @@
-<div class="sensor-container">
-  <div class="sensor-section">
-    <h2>Acelerómetro (m/s²)</h2>
-    <div class="sensor-data">
-      <p>X: {{motionData.acceleration?.x?.toFixed(2) ?? 'No data'}}</p>
-      <p>Y: {{motionData.acceleration?.y?.toFixed(2) ?? 'No data'}}</p>
-      <p>Z: {{motionData.acceleration?.z?.toFixed(2) ?? 'No data'}}</p>
+<div class="dashboard-container" [class.dark]="isDarkMode">
+  <div class="dashboard-header">
+    <h1>Panel de Sensores</h1>
+    <button class="theme-toggle" (click)="toggleDarkMode()">
+      <span *ngIf="isDarkMode" class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>
+      </span>
+      <span *ngIf="!isDarkMode" class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </span>
+    </button>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Acelerómetro -->
+    <div class="sensor-card">
+      <div class="sensor-header">
+        <h2>Acelerómetro</h2>
+        <span class="sensor-unit">(m/s²)</span>
+      </div>
+      <div class="sensor-content">
+        <div class="sensor-visualization">
+          <div class="sensor-3d-container">
+            <div class="sensor-3d-indicator" 
+                 [style.transform]="'rotateX(' + getAccelTilt('y') + 'deg) rotateY(' + getAccelTilt('x') + 'deg)'">
+              <div class="sensor-3d-face front"></div>
+              <div class="sensor-3d-face back"></div>
+              <div class="sensor-3d-face left"></div>
+              <div class="sensor-3d-face right"></div>
+              <div class="sensor-3d-face top"></div>
+              <div class="sensor-3d-face bottom"></div>
+            </div>
+          </div>
+        </div>
+        <div class="sensor-values">
+          <div class="sensor-value-item">
+            <span class="axis-label">X:</span>
+            <div class="value-bar-container">
+              <div class="value-bar" [style.width]="getBarWidth('accel', 'x')" [class.positive]="isPositive('accel', 'x')"></div>
+            </div>
+            <span class="value-text">{{motionData.acceleration?.x?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+          <div class="sensor-value-item">
+            <span class="axis-label">Y:</span>
+            <div class="value-bar-container">
+              <div class="value-bar" [style.width]="getBarWidth('accel', 'y')" [class.positive]="isPositive('accel', 'y')"></div>
+            </div>
+            <span class="value-text">{{motionData.acceleration?.y?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+          <div class="sensor-value-item">
+            <span class="axis-label">Z:</span>
+            <div class="value-bar-container">
+              <div class="value-bar" [style.width]="getBarWidth('accel', 'z')" [class.positive]="isPositive('accel', 'z')"></div>
+            </div>
+            <span class="value-text">{{motionData.acceleration?.z?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Giroscopio -->
+    <div class="sensor-card">
+      <div class="sensor-header">
+        <h2>Giroscopio</h2>
+        <span class="sensor-unit">(°)</span>
+      </div>
+      <div class="sensor-content">
+        <div class="sensor-visualization">
+          <div class="gyro-visualization">
+            <div class="gyro-circle" [style.transform]="'rotateZ(' + (motionData.rotation?.alpha ?? 0) + 'deg)'">
+              <div class="gyro-indicator"></div>
+            </div>
+          </div>
+        </div>
+        <div class="sensor-values">
+          <div class="sensor-value-item">
+            <span class="axis-label">Alpha:</span>
+            <div class="value-bar-container circular">
+              <div class="circular-progress" [style.background]="getCircularGradient('alpha')"></div>
+            </div>
+            <span class="value-text">{{motionData.rotation?.alpha?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+          <div class="sensor-value-item">
+            <span class="axis-label">Beta:</span>
+            <div class="value-bar-container">
+              <div class="value-bar" [style.width]="getBarWidth('gyro', 'beta')" [class.positive]="isPositive('gyro', 'beta')"></div>
+            </div>
+            <span class="value-text">{{motionData.rotation?.beta?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+          <div class="sensor-value-item">
+            <span class="axis-label">Gamma:</span>
+            <div class="value-bar-container">
+              <div class="value-bar" [style.width]="getBarWidth('gyro', 'gamma')" [class.positive]="isPositive('gyro', 'gamma')"></div>
+            </div>
+            <span class="value-text">{{motionData.rotation?.gamma?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orientación -->
+    <div class="sensor-card">
+      <div class="sensor-header">
+        <h2>Orientación</h2>
+        <span class="sensor-unit">(°)</span>
+      </div>
+      <div class="sensor-content">
+        <div class="sensor-visualization">
+          <div class="orientation-model" 
+               [style.transform]="'rotateX(' + (motionData.orientation?.pitch ?? 0) + 'deg) rotateY(' + (motionData.orientation?.roll ?? 0) + 'deg) rotateZ(' + (motionData.orientation?.yaw ?? 0) + 'deg)'">
+            <div class="device-model">
+              <div class="device-face front"></div>
+              <div class="device-face back"></div>
+              <div class="device-face left"></div>
+              <div class="device-face right"></div>
+              <div class="device-face top"></div>
+              <div class="device-face bottom"></div>
+            </div>
+          </div>
+        </div>
+        <div class="sensor-values">
+          <div class="sensor-value-item">
+            <span class="axis-label">Pitch:</span>
+            <div class="value-bar-container">
+              <div class="value-bar" [style.width]="getBarWidth('orientation', 'pitch')" [class.positive]="isPositive('orientation', 'pitch')"></div>
+            </div>
+            <span class="value-text">{{motionData.orientation?.pitch?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+          <div class="sensor-value-item">
+            <span class="axis-label">Roll:</span>
+            <div class="value-bar-container">
+              <div class="value-bar" [style.width]="getBarWidth('orientation', 'roll')" [class.positive]="isPositive('orientation', 'roll')"></div>
+            </div>
+            <span class="value-text">{{motionData.orientation?.roll?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+          <div class="sensor-value-item">
+            <span class="axis-label">Yaw:</span>
+            <div class="value-bar-container">
+              <div class="value-bar" [style.width]="getBarWidth('orientation', 'yaw')" [class.positive]="isPositive('orientation', 'yaw')"></div>
+            </div>
+            <span class="value-text">{{motionData.orientation?.yaw?.toFixed(2) ?? 'No data'}}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="sensor-section">
-    <h2>Giroscopio (°)</h2>
-    <div class="sensor-data">
-      <p>Alpha: {{motionData.rotation?.alpha?.toFixed(2) ?? 'No data'}}</p>
-      <p>Beta: {{motionData.rotation?.beta?.toFixed(2) ?? 'No data'}}</p>
-      <p>Gamma: {{motionData.rotation?.gamma?.toFixed(2) ?? 'No data'}}</p>
+  <div class="matrix-section" *ngIf="showMatrix">
+    <h2>Matriz de Orientación</h2>
+    <div class="matrix-container">
+      <div class="matrix-row" *ngFor="let i of [0, 1, 2]">
+        <div class="matrix-cell" *ngFor="let j of [0, 1, 2]">
+          {{orientationMatrix[i * 3 + j]?.toFixed(3) ?? '0.000'}}
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="sensor-section">
-    <h2>Orientación (°)</h2>
-    <div class="sensor-data">
-      <p>Pitch: {{motionData.orientation?.pitch ?? 'No data'}}</p>
-      <p>Roll: {{motionData.orientation?.roll ?? 'No data'}}</p>
-      <p>Yaw: {{motionData.orientation?.yaw ?? 'No data'}}</p>
-    </div>
+  <div class="dashboard-footer">
+    <button class="toggle-matrix-btn" (click)="toggleMatrix()">
+      {{ showMatrix ? 'Ocultar Matriz' : 'Mostrar Matriz' }}
+    </button>
   </div>
 </div>
-
