@@ -149,10 +149,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s;
-  
-  &:hover {
-    background-color: darken(#3a86ff, 10%);
-  }
 }
 
 .sensor-header {
@@ -209,35 +205,12 @@
   border: 2px solid var(--primary-color);
   opacity: 0.7;
   
-  &.front {
-    transform: translateZ(50px);
-    background-color: rgba(58, 134, 255, 0.2);
-  }
-  
-  &.back {
-    transform: rotateY(180deg) translateZ(50px);
-    background-color: rgba(58, 134, 255, 0.1);
-  }
-  
-  &.left {
-    transform: rotateY(-90deg) translateZ(50px);
-    background-color: rgba(58, 134, 255, 0.15);
-  }
-  
-  &.right {
-    transform: rotateY(90deg) translateZ(50px);
-    background-color: rgba(58, 134, 255, 0.15);
-  }
-  
-  &.top {
-    transform: rotateX(90deg) translateZ(50px);
-    background-color: rgba(58, 134, 255, 0.25);
-  }
-  
-  &.bottom {
-    transform: rotateX(-90deg) translateZ(50px);
-    background-color: rgba(58, 134, 255, 0.1);
-  }
+  &.front { transform: translateZ(50px); background-color: rgba(58, 134, 255, 0.2); }
+  &.back { transform: rotateY(180deg) translateZ(50px); background-color: rgba(58, 134, 255, 0.1); }
+  &.left { transform: rotateY(-90deg) translateZ(50px); background-color: rgba(58, 134, 255, 0.15); }
+  &.right { transform: rotateY(90deg) translateZ(50px); background-color: rgba(58, 134, 255, 0.15); }
+  &.top { transform: rotateX(90deg) translateZ(50px); background-color: rgba(58, 134, 255, 0.25); }
+  &.bottom { transform: rotateX(-90deg) translateZ(50px); background-color: rgba(58, 134, 255, 0.1); }
 }
 
 .gyro-visualization {
@@ -277,12 +250,12 @@
   }
 }
 
-/* Add these styles to improve the orientation visualization */
+/* Orientation model */
 .orientation-model {
   width: 100px;
   height: 100px;
   transform-style: preserve-3d;
-  transition: transform 0.2s ease; /* Reduced transition time for more responsive movement */
+  transition: transform 0.2s ease;
   margin: 0 auto;
 }
 
@@ -293,20 +266,14 @@
   transform-style: preserve-3d;
 }
 
-/* Add grid lines to the device faces for better orientation reference */
 .device-face {
   position: absolute;
   width: 100%;
   height: 100%;
   border: 2px solid var(--success-color);
-  background-image: linear-gradient(to right, rgba(56, 176, 0, 0.1) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(56, 176, 0, 0.1) 1px, transparent 1px);
-  background-size: 10px 10px;
   
-  &.front {
-    transform: translateZ(25px);
+  &.front, &.back {
     background-color: rgba(56, 176, 0, 0.2);
-    
     &::after {
       content: '';
       position: absolute;
@@ -315,110 +282,27 @@
       right: 10px;
       bottom: 40px;
       border: 1px solid rgba(56, 176, 0, 0.5);
-      background-color: rgba(56, 176, 0, 0.1);
-    }
-    
-    /* Add direction indicators */
-    &::before {
-      content: 'Y+';
-      position: absolute;
-      top: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 10px;
-      color: var(--success-color);
-      font-weight: bold;
     }
   }
   
-  &.back {
-    transform: rotateY(180deg) translateZ(25px);
-    background-color: rgba(56, 176, 0, 0.1);
-    
-    /* Add direction indicators */
-    &::before {
-      content: 'Y-';
-      position: absolute;
-      top: 5px;
-      left: 50%;
-      transform: translateX(-50%) rotateY(180deg);
-      font-size: 10px;
-      color: var(--success-color);
-      font-weight: bold;
-    }
-  }
+  &.front { transform: translateZ(25px); }
+  &.back { transform: rotateY(180deg) translateZ(25px); background-color: rgba(56, 176, 0, 0.1); }
   
-  &.left {
-    transform: rotateY(-90deg) translateZ(50px);
-    background-color: rgba(56, 176, 0, 0.15);
+  &.left, &.right {
     width: 50px;
-    
-    /* Add direction indicators */
-    &::before {
-      content: 'X-';
-      position: absolute;
-      top: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 10px;
-      color: var(--success-color);
-      font-weight: bold;
-    }
+    background-color: rgba(56, 176, 0, 0.15);
   }
   
-  &.right {
-    transform: rotateY(90deg) translateZ(50px);
-    background-color: rgba(56, 176, 0, 0.15);
-    width: 50px;
-    
-    /* Add direction indicators */
-    &::before {
-      content: 'X+';
-      position: absolute;
-      top: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 10px;
-      color: var(--success-color);
-      font-weight: bold;
-    }
-  }
+  &.left { transform: rotateY(-90deg) translateZ(50px); }
+  &.right { transform: rotateY(90deg) translateZ(50px); }
   
-  &.top {
-    transform: rotateX(90deg) translateZ(50px);
-    background-color: rgba(56, 176, 0, 0.15);
+  &.top, &.bottom {
     height: 50px;
-    
-    /* Add direction indicators */
-    &::before {
-      content: 'Z+';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 10px;
-      color: var(--success-color);
-      font-weight: bold;
-    }
+    background-color: rgba(56, 176, 0, 0.15);
   }
   
-  &.bottom {
-    transform: rotateX(-90deg) translateZ(50px);
-    background-color: rgba(56, 176, 0, 0.15);
-    height: 50px;
-    
-    /* Add direction indicators */
-    &::before {
-      content: 'Z-';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 10px;
-      color: var(--success-color);
-      font-weight: bold;
-    }
-  }
+  &.top { transform: rotateX(90deg) translateZ(50px); }
+  &.bottom { transform: rotateX(-90deg) translateZ(50px); }
 }
 
 .sensor-values {
@@ -474,13 +358,12 @@
   transition: background 0.3s ease;
 }
 
-/* Update the value text to accommodate both raw and scaled values */
 .value-text {
   font-family: 'Courier New', monospace;
   font-size: 0.85rem;
   color: var(--text-color);
   text-align: right;
-  min-width: 120px; /* Ensure enough space for both values */
+  min-width: 120px;
 }
 
 .matrix-section {
@@ -536,28 +419,12 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s;
-  
-  &:hover {
-    background-color: darken(#3a86ff, 10%);
-  }
 }
 
 @media (max-width: 768px) {
-  .dashboard-container {
-    padding: 1rem;
-  }
-  
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .sensor-value-item {
-    grid-template-columns: 50px 1fr 70px;
-  }
-  
-  .matrix-cell {
-    width: 60px;
-    font-size: 0.8rem;
-  }
+  .dashboard-container { padding: 1rem; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .sensor-value-item { grid-template-columns: 50px 1fr 70px; }
+  .matrix-cell { width: 60px; font-size: 0.8rem; }
 }
 
