@@ -1,28 +1,55 @@
 <div class="dashboard-container" [class.dark]="isDarkMode">
   <div class="dashboard-header">
-    <h1>Panel de Sensores</h1>
+    <h1>Sensor Dashboard</h1>
     <button class="theme-toggle" (click)="toggleDarkMode()">
-      <span *ngIf="isDarkMode" class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>
-      </span>
-      <span *ngIf="!isDarkMode" class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      <span class="icon">
+        <svg *ngIf="!isDarkMode" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+        <svg *ngIf="isDarkMode" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
       </span>
     </button>
   </div>
 
+  <!-- Step Counter Card -->
+  <div class="sensor-card step-counter-card">
+    <div class="sensor-header">
+      <h2>Podómetro</h2>
+      <span class="sensor-unit">pasos</span>
+    </div>
+    <div class="sensor-content">
+      <div class="step-counter-visualization">
+        <div class="step-count">{{ stepCount }}</div>
+        <div class="step-progress">
+          <div class="step-progress-bar" [style.width]="getAccelerationMagnitude() / accelerationThreshold * 100 + '%'"></div>
+        </div>
+      </div>
+      <div class="step-counter-controls">
+        <button class="reset-steps-btn" (click)="resetStepCount()">Reiniciar contador</button>
+      </div>
+    </div>
+  </div>
+
   <div class="dashboard-grid">
-    <!-- Acelerómetro -->
     <div class="sensor-card">
       <div class="sensor-header">
         <h2>Acelerómetro</h2>
-        <span class="sensor-unit">(m/s²)</span>
+        <span class="sensor-unit">m/s²</span>
       </div>
       <div class="sensor-content">
         <div class="sensor-visualization">
           <div class="sensor-3d-container">
-            <div class="sensor-3d-indicator" 
-                 [style.transform]="'rotateX(' + getAccelTilt('y') + 'deg) rotateY(' + getAccelTilt('x') + 'deg)'">
+            <div class="sensor-3d-indicator" [style.transform]="'rotateX(' + getAccelTilt('y') + 'deg) rotateY(' + getAccelTilt('x') + 'deg)'">
               <div class="sensor-3d-face front"></div>
               <div class="sensor-3d-face back"></div>
               <div class="sensor-3d-face left"></div>
@@ -34,80 +61,84 @@
         </div>
         <div class="sensor-values">
           <div class="sensor-value-item">
-            <span class="axis-label">X:</span>
+            <span class="axis-label">X</span>
             <div class="value-bar-container">
-              <div class="value-bar" [style.width]="getBarWidth('accel', 'x')" [class.positive]="isPositive('accel', 'x')"></div>
+              <div class="value-bar" [class.positive]="isPositive('accel', 'x')" [style.width]="getBarWidth('accel', 'x')"></div>
             </div>
-            <span class="value-text">{{motionData.acceleration?.x?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.acceleration?.x, '1.2-2') }}</span>
           </div>
           <div class="sensor-value-item">
-            <span class="axis-label">Y:</span>
+            <span class="axis-label">Y</span>
             <div class="value-bar-container">
-              <div class="value-bar" [style.width]="getBarWidth('accel', 'y')" [class.positive]="isPositive('accel', 'y')"></div>
+              <div class="value-bar" [class.positive]="isPositive('accel', 'y')" [style.width]="getBarWidth('accel', 'y')"></div>
             </div>
-            <span class="value-text">{{motionData.acceleration?.y?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.acceleration?.y, '1.2-2') }}</span>
           </div>
           <div class="sensor-value-item">
-            <span class="axis-label">Z:</span>
+            <span class="axis-label">Z</span>
             <div class="value-bar-container">
-              <div class="value-bar" [style.width]="getBarWidth('accel', 'z')" [class.positive]="isPositive('accel', 'z')"></div>
+              <div class="value-bar" [class.positive]="isPositive('accel', 'z')" [style.width]="getBarWidth('accel', 'z')"></div>
             </div>
-            <span class="value-text">{{motionData.acceleration?.z?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.acceleration?.z, '1.2-2') }}</span>
+          </div>
+          <div class="sensor-value-item">
+            <span class="axis-label">Mag</span>
+            <div class="value-bar-container">
+              <div class="value-bar positive" [style.width]="(getAccelerationMagnitude() / 10 * 100) + '%'"></div>
+            </div>
+            <span class="value-text">{{ formatNumber(getAccelerationMagnitude(), '1.2-2') }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Giroscopio -->
     <div class="sensor-card">
       <div class="sensor-header">
         <h2>Giroscopio</h2>
-        <span class="sensor-unit">(°)</span>
+        <span class="sensor-unit">grados</span>
       </div>
       <div class="sensor-content">
         <div class="sensor-visualization">
           <div class="gyro-visualization">
-            <div class="gyro-circle" [style.transform]="'rotateZ(' + (motionData.rotation?.alpha ?? 0) + 'deg)'">
-              <div class="gyro-indicator"></div>
+            <div class="gyro-circle" [style.background]="getCircularGradient('alpha')">
+              <div class="gyro-indicator" [style.transform]="'translateY(-50%) rotate(' + (motionData.rotation?.alpha || 0) + 'deg)'"></div>
             </div>
           </div>
         </div>
         <div class="sensor-values">
           <div class="sensor-value-item">
-            <span class="axis-label">Alpha:</span>
+            <span class="axis-label">Alpha</span>
             <div class="value-bar-container circular">
               <div class="circular-progress" [style.background]="getCircularGradient('alpha')"></div>
             </div>
-            <span class="value-text">{{motionData.rotation?.alpha?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.rotation?.alpha, '1.0-0') }}°</span>
           </div>
           <div class="sensor-value-item">
-            <span class="axis-label">Beta:</span>
+            <span class="axis-label">Beta</span>
             <div class="value-bar-container">
-              <div class="value-bar" [style.width]="getBarWidth('gyro', 'beta')" [class.positive]="isPositive('gyro', 'beta')"></div>
+              <div class="value-bar" [class.positive]="isPositive('gyro', 'beta')" [style.width]="getBarWidth('gyro', 'beta')"></div>
             </div>
-            <span class="value-text">{{motionData.rotation?.beta?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.rotation?.beta, '1.0-0') }}°</span>
           </div>
           <div class="sensor-value-item">
-            <span class="axis-label">Gamma:</span>
+            <span class="axis-label">Gamma</span>
             <div class="value-bar-container">
-              <div class="value-bar" [style.width]="getBarWidth('gyro', 'gamma')" [class.positive]="isPositive('gyro', 'gamma')"></div>
+              <div class="value-bar" [class.positive]="isPositive('gyro', 'gamma')" [style.width]="getBarWidth('gyro', 'gamma')"></div>
             </div>
-            <span class="value-text">{{motionData.rotation?.gamma?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.rotation?.gamma, '1.0-0') }}°</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Orientación -->
     <div class="sensor-card">
       <div class="sensor-header">
         <h2>Orientación</h2>
-        <span class="sensor-unit">(°)</span>
+        <span class="sensor-unit">grados</span>
       </div>
       <div class="sensor-content">
         <div class="sensor-visualization">
-          <div class="orientation-model" 
-               [style.transform]="'rotateX(' + (motionData.orientation?.pitch ?? 0) + 'deg) rotateY(' + (motionData.orientation?.roll ?? 0) + 'deg) rotateZ(' + (motionData.orientation?.yaw ?? 0) + 'deg)'">
+          <div class="orientation-model" [style.transform]="'rotateX(' + getScaledOrientation('pitch') + 'deg) rotateY(' + getScaledOrientation('roll') + 'deg) rotateZ(' + getScaledOrientation('yaw') + 'deg)'">
             <div class="device-model">
               <div class="device-face front"></div>
               <div class="device-face back"></div>
@@ -120,25 +151,25 @@
         </div>
         <div class="sensor-values">
           <div class="sensor-value-item">
-            <span class="axis-label">Pitch:</span>
+            <span class="axis-label">Pitch</span>
             <div class="value-bar-container">
-              <div class="value-bar" [style.width]="getBarWidth('orientation', 'pitch')" [class.positive]="isPositive('orientation', 'pitch')"></div>
+              <div class="value-bar" [class.positive]="isPositive('orientation', 'pitch')" [style.width]="getBarWidth('orientation', 'pitch')"></div>
             </div>
-            <span class="value-text">{{motionData.orientation?.pitch?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.orientation?.pitch, '1.1-1') }}° ({{ formatNumber(getScaledOrientation('pitch'), '1.1-1') }}°)</span>
           </div>
           <div class="sensor-value-item">
-            <span class="axis-label">Roll:</span>
+            <span class="axis-label">Roll</span>
             <div class="value-bar-container">
-              <div class="value-bar" [style.width]="getBarWidth('orientation', 'roll')" [class.positive]="isPositive('orientation', 'roll')"></div>
+              <div class="value-bar" [class.positive]="isPositive('orientation', 'roll')" [style.width]="getBarWidth('orientation', 'roll')"></div>
             </div>
-            <span class="value-text">{{motionData.orientation?.roll?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.orientation?.roll, '1.1-1') }}° ({{ formatNumber(getScaledOrientation('roll'), '1.1-1') }}°)</span>
           </div>
           <div class="sensor-value-item">
-            <span class="axis-label">Yaw:</span>
+            <span class="axis-label">Yaw</span>
             <div class="value-bar-container">
-              <div class="value-bar" [style.width]="getBarWidth('orientation', 'yaw')" [class.positive]="isPositive('orientation', 'yaw')"></div>
+              <div class="value-bar" [class.positive]="isPositive('orientation', 'yaw')" [style.width]="getBarWidth('orientation', 'yaw')"></div>
             </div>
-            <span class="value-text">{{motionData.orientation?.yaw?.toFixed(2) ?? 'No data'}}</span>
+            <span class="value-text">{{ formatNumber(motionData.orientation?.yaw, '1.1-1') }}° ({{ formatNumber(getScaledOrientation('yaw'), '1.1-1') }}°)</span>
           </div>
         </div>
       </div>
@@ -148,10 +179,20 @@
   <div class="matrix-section" *ngIf="showMatrix">
     <h2>Matriz de Orientación</h2>
     <div class="matrix-container">
-      <div class="matrix-row" *ngFor="let i of [0, 1, 2]">
-        <div class="matrix-cell" *ngFor="let j of [0, 1, 2]">
-          {{orientationMatrix[i * 3 + j]?.toFixed(3) ?? '0.000'}}
-        </div>
+      <div class="matrix-row">
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[0], '1.3-3') }}</div>
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[1], '1.3-3') }}</div>
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[2], '1.3-3') }}</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[3], '1.3-3') }}</div>
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[4], '1.3-3') }}</div>
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[5], '1.3-3') }}</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[6], '1.3-3') }}</div>
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[7], '1.3-3') }}</div>
+        <div class="matrix-cell">{{ formatNumber(orientationMatrix[8], '1.3-3') }}</div>
       </div>
     </div>
   </div>
@@ -162,3 +203,4 @@
     </button>
   </div>
 </div>
+

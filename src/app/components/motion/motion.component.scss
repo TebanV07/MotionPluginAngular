@@ -96,6 +96,65 @@
   }
 }
 
+/* Step Counter Card Styles */
+.step-counter-card {
+  margin-bottom: 2rem;
+}
+
+.step-counter-visualization {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+
+.step-count {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(58, 134, 255, 0.2);
+}
+
+.step-progress {
+  width: 80%;
+  height: 12px;
+  background-color: var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.step-progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.step-counter-controls {
+  display: flex;
+  justify-content: center;
+}
+
+.reset-steps-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background-color: darken(#3a86ff, 10%);
+  }
+}
+
 .sensor-header {
   padding: 1.25rem;
   border-bottom: 1px solid var(--border-color);
@@ -218,11 +277,13 @@
   }
 }
 
+/* Add these styles to improve the orientation visualization */
 .orientation-model {
   width: 100px;
   height: 100px;
   transform-style: preserve-3d;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease; /* Reduced transition time for more responsive movement */
+  margin: 0 auto;
 }
 
 .device-model {
@@ -232,11 +293,15 @@
   transform-style: preserve-3d;
 }
 
+/* Add grid lines to the device faces for better orientation reference */
 .device-face {
   position: absolute;
   width: 100%;
   height: 100%;
   border: 2px solid var(--success-color);
+  background-image: linear-gradient(to right, rgba(56, 176, 0, 0.1) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(56, 176, 0, 0.1) 1px, transparent 1px);
+  background-size: 10px 10px;
   
   &.front {
     transform: translateZ(25px);
@@ -252,35 +317,107 @@
       border: 1px solid rgba(56, 176, 0, 0.5);
       background-color: rgba(56, 176, 0, 0.1);
     }
+    
+    /* Add direction indicators */
+    &::before {
+      content: 'Y+';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--success-color);
+      font-weight: bold;
+    }
   }
   
   &.back {
     transform: rotateY(180deg) translateZ(25px);
     background-color: rgba(56, 176, 0, 0.1);
+    
+    /* Add direction indicators */
+    &::before {
+      content: 'Y-';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%) rotateY(180deg);
+      font-size: 10px;
+      color: var(--success-color);
+      font-weight: bold;
+    }
   }
   
   &.left {
     transform: rotateY(-90deg) translateZ(50px);
     background-color: rgba(56, 176, 0, 0.15);
     width: 50px;
+    
+    /* Add direction indicators */
+    &::before {
+      content: 'X-';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--success-color);
+      font-weight: bold;
+    }
   }
   
   &.right {
     transform: rotateY(90deg) translateZ(50px);
     background-color: rgba(56, 176, 0, 0.15);
     width: 50px;
+    
+    /* Add direction indicators */
+    &::before {
+      content: 'X+';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--success-color);
+      font-weight: bold;
+    }
   }
   
   &.top {
     transform: rotateX(90deg) translateZ(50px);
     background-color: rgba(56, 176, 0, 0.15);
     height: 50px;
+    
+    /* Add direction indicators */
+    &::before {
+      content: 'Z+';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      color: var(--success-color);
+      font-weight: bold;
+    }
   }
   
   &.bottom {
     transform: rotateX(-90deg) translateZ(50px);
     background-color: rgba(56, 176, 0, 0.15);
     height: 50px;
+    
+    /* Add direction indicators */
+    &::before {
+      content: 'Z-';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      color: var(--success-color);
+      font-weight: bold;
+    }
   }
 }
 
@@ -337,11 +474,13 @@
   transition: background 0.3s ease;
 }
 
+/* Update the value text to accommodate both raw and scaled values */
 .value-text {
   font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-color);
   text-align: right;
+  min-width: 120px; /* Ensure enough space for both values */
 }
 
 .matrix-section {
@@ -421,3 +560,4 @@
     font-size: 0.8rem;
   }
 }
+

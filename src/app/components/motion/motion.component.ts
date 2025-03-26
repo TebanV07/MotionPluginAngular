@@ -1,17 +1,32 @@
-import { Component, type OnInit, type OnDestroy } from "@angular/core"
+import { Component, OnInit, OnDestroy } from "@angular/core"
 import { MotionService } from "./Services/motion.service"
 import { MotionData } from "./Model/MotionData.model"
+import { CommonModule } from "@angular/common"
 
 @Component({
   selector: "app-motion",
   templateUrl: "./motion.component.html",
   styleUrls: ["./motion.component.scss"],
+  standalone: true,
+  imports: [CommonModule],
 })
 export class MotionComponent implements OnInit, OnDestroy {
   motionData: MotionData = {}
   orientationMatrix: number[] = []
   isDarkMode = false
   showMatrix = false
+
+  // Step counter variables
+  stepCount = 0
+  lastAcceleration = 0
+  accelerationThreshold = 1.2 // Threshold to detect a step (m/s²)
+  lastStepTime = 0
+  minStepInterval = 300 // Minimum time between steps (ms)
+
+  // Add these properties to the class
+  orientationScaleFactor = 0.5 // Factor para reducir la sensibilidad del movimiento
+  smoothedOrientation = { pitch: 0, roll: 0, yaw: 0 }
+  smoothingFactor = 0.2 // Factor de suavizado (0-1), valores más bajos = más suavizado
 
   constructor(private motionS: MotionService) {
     // Detectar preferencia de tema del sistema
@@ -22,7 +37,33 @@ export class MotionComponent implements OnInit, OnDestroy {
     this.motionS.startMotionDetection((data: MotionData) => {
       this.motionData = data
       this.updateOrientationMatrix()
+      this.smoothOrientation()
+      this.detectStep()
     })
+  }
+
+  private detectStep(): void {
+    if (!this.motionData.acceleration) return
+
+    // Calculate the magnitude of acceleration (excluding gravity)
+    const { x = 0, y = 0, z = 0 } = this.motionData.acceleration
+    const accelerationMagnitude = Math.sqrt(x * x + y * y + z * z)
+
+    const currentTime = Date.now()
+
+    // Detect a step when:
+    // 1. Acceleration crosses the threshold (from below to above)
+    // 2. Enough time has passed since the last step (to avoid counting bounces)
+    if (
+      this.lastAcceleration < this.accelerationThreshold &&
+      accelerationMagnitude >= this.accelerationThreshold &&
+      currentTime - this.lastStepTime > this.minStepInterval
+    ) {
+      this.stepCount++
+      this.lastStepTime = currentTime
+    }
+
+    this.lastAcceleration = accelerationMagnitude
   }
 
   private updateOrientationMatrix() {
@@ -56,12 +97,43 @@ export class MotionComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Add this method after updateOrientationMatrix()
+  private smoothOrientation(): void {
+    if (!this.motionData.orientation) return
+
+    const { pitch = 0, roll = 0, yaw = 0 } = this.motionData.orientation
+
+    // Aplicar suavizado a los valores de orientación
+    this.smoothedOrientation.pitch =
+      this.smoothedOrientation.pitch * (1 - this.smoothingFactor) + pitch * this.smoothingFactor
+    this.smoothedOrientation.roll =
+      this.smoothedOrientation.roll * (1 - this.smoothingFactor) + roll * this.smoothingFactor
+    this.smoothedOrientation.yaw =
+      this.smoothedOrientation.yaw * (1 - this.smoothingFactor) + yaw * this.smoothingFactor
+  }
+
+  // Add this method to get scaled orientation values for the 3D model
+  getScaledOrientation(axis: string): number {
+    if (axis === "pitch") {
+      return this.smoothedOrientation.pitch * this.orientationScaleFactor
+    } else if (axis === "roll") {
+      return this.smoothedOrientation.roll * this.orientationScaleFactor
+    } else if (axis === "yaw") {
+      return this.smoothedOrientation.yaw * this.orientationScaleFactor
+    }
+    return 0
+  }
+
   toggleDarkMode(): void {
     this.isDarkMode = !this.isDarkMode
   }
 
   toggleMatrix(): void {
     this.showMatrix = !this.showMatrix
+  }
+
+  resetStepCount(): void {
+    this.stepCount = 0
   }
 
   // Métodos para visualizaciones
@@ -131,6 +203,26 @@ export class MotionComponent implements OnInit, OnDestroy {
     degree = ((degree % 360) + 360) % 360
 
     return `conic-gradient(var(--secondary-color) ${degree}deg, var(--border-color) 0deg)`
+  }
+
+  // Calcular la magnitud de aceleración para el podómetro
+  getAccelerationMagnitude(): number {
+    if (!this.motionData.acceleration) return 0
+
+    const { x = 0, y = 0, z = 0 } = this.motionData.acceleration
+    return Math.sqrt(x * x + y * y + z * z)
+  }
+
+  // Add this method to your component class
+  formatNumber(value: number | undefined, format: string): string {
+    if (value === undefined) return "0.00"
+
+    // Parse the format string to determine decimal places
+    const parts = format.split("-")
+    const minDecimals = Number.parseInt(parts[1], 10) || 0
+    const maxDecimals = Number.parseInt(parts[2], 10) || 0
+
+    return value.toFixed(maxDecimals)
   }
 
   ngOnDestroy(): void {
