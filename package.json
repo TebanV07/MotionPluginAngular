@@ -1,10 +1,10 @@
 {
   "name": "angular-motion",
   "version": "0.0.0",
-  "scripts": { 
-    "build": "ng build && cp -r dist/angular-motion/browser/* dist/",
-    "build:capacitor": "npm run build && npx cap sync android",
+  "scripts": {
+    "ng": "ng",
     "start": "ng serve",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
